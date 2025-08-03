@@ -441,7 +441,7 @@ class Database:
 
 # 🔰 Startup Message
 print(f"\n{Fore.CYAN}{'='*50}")
-print(f"🤖 Initializing UGDEV Uploader Bot Database")
+print(f"🤖 Initializing ACM Uploader Bot Database")
 print(f"{'='*50}{Style.RESET_ALL}\n")
 
 # 🔌 Connect to DB with error handling
