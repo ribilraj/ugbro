@@ -74,7 +74,7 @@ client = SecureAPIClient()
 apis = client.get_apis()
 
 # Global variables
-watermark = "UG"  # Default value
+watermark = "ACM"  # Default value
 count = 0
 userbot = None
 timeout_duration = 300  # 5 minutes
@@ -82,7 +82,7 @@ timeout_duration = 300  # 5 minutes
 
 # Initialize bot with random session
 bot = Client(
-    "ugx",
+    "ACM",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
@@ -316,7 +316,7 @@ async def start(bot: Client, m: Message):
                     photo=photologo,
                     caption="**🔒 Access Required**\n\nContact admin to get access.",
                     reply_markup=InlineKeyboardMarkup([
-                        [InlineKeyboardButton("💫 Get Access", url="https://t.me/ItsUGBot")]
+                        [InlineKeyboardButton("💫 Get Access", url="https://t.me/Final_piece")]
                     ])
                 )
                 return
@@ -336,7 +336,7 @@ async def start(bot: Client, m: Message):
             await m.reply_photo(
                 photo=photologo,
                 caption=f"**👋 Welcome {m.from_user.first_name}!**\n\n{commands_list}",
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("📚 Help", url="https://t.me/ItsUGBot")]])
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("📚 Help", url="https://t.me/Final_piece")]])
             )
             
     except Exception as e:
@@ -363,7 +363,7 @@ async def unauthorized_handler(client, message: Message):
         "<blockquote>You need to have an active subscription to use this bot.\n"
         "Please contact admin to get premium access.</blockquote>",
         reply_markup=InlineKeyboardMarkup([[
-            InlineKeyboardButton("💫 Get Premium Access", url="https://t.me/ItsUGBot")
+            InlineKeyboardButton("💫 Get Premium Access", url="https://t.me/Final_piece")
         ]])
     )
 
