@@ -512,7 +512,7 @@ async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog, cha
                 subprocess.run(f'ffmpeg -i "{part}" -ss 00:00:10 -vframes 1 -q:v 2 -y "{temp_thumb}"', shell=True)
                 if os.path.exists(temp_thumb):
                     spaced_text = ' '.join(watermark)
-                    text_cmd = f'ffmpeg -i "{temp_thumb}" -vf "drawbox=y=0:color=black@0.5:width=iw:height=200:t=fill,drawtext=fontfile=font.otf:text=\'{spaced_text}\':fontcolor=white:fontsize=90:x=(w-text_w)/2:y=60" -c:v mjpeg -q:v 2 -y "{temp_thumb}"'
+                    text_cmd = f'ffmpeg -i "{temp_thumb}" -vf "drawbox=y=0:color=black@0.5:width=iw:height=ih/6:t=fill,drawtext=fontfile=font.otf:text=\'{"   ".join("spaced_text")}\':fontcolor=white:fontsize=ih/6:x=(w-text_w)/2:y=(ih/12-text_h/2)" -c:v mjpeg -q:v 2 -y "{temp_thumb}"'
                     subprocess.run(text_cmd, shell=True)
                 thumbnail = temp_thumb if os.path.exists(temp_thumb) else None
             
@@ -594,8 +594,8 @@ async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog, cha
             temp_thumb = f"downloads/thumb_{os.path.basename(filename)}.jpg"
             subprocess.run(f'ffmpeg -i "{filename}" -ss 00:00:10 -vframes 1 -q:v 2 -y "{temp_thumb}"', shell=True)
             if os.path.exists(temp_thumb):
-                spaced_text = ' '.join(ACM)
-                text_cmd = f'ffmpeg -i "{temp_thumb}" -vf "drawbox=y=0:color=black@0.5:width=iw:height=ih/6:t=fill,drawtext=fontfile=font.otf:text=\'{"   ".join("ACM")}\':fontcolor=white:fontsize=ih/6:x=(w-text_w)/2:y=(ih/12-text_h/2)" -c:v mjpeg -q:v 2 -y "{temp_thumb}"'
+                spaced_text = ' '.join(watermark)
+                text_cmd = f'ffmpeg -i "{temp_thumb}" -vf "drawbox=y=0:color=black@0.5:width=iw:height=ih/6:t=fill,drawtext=fontfile=font.otf:text=\'{"   ".join("spaced_text")}\':fontcolor=white:fontsize=ih/6:x=(w-text_w)/2:y=(ih/12-text_h/2)" -c:v mjpeg -q:v 2 -y "{temp_thumb}"'
                 subprocess.run(text_cmd, shell=True)
             thumbnail = temp_thumb if os.path.exists(temp_thumb) else None
             
