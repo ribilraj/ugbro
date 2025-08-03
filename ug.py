@@ -572,41 +572,105 @@ async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog, cha
                 except Exception as e:
                     print(f"Error sending document: {str(e)}")
                 
+async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog, channel_id, watermark="UG"):
+    log_channel = db.get_log_channel(bot.me.username)
+
+    if isinstance(filename, list) and len(filename) > 1:
+        await prog.delete(True)
+        await m.reply_text(f"**Large File Detected!**\nUploading in {len(filename)} parts...")
+
+        for i, part in enumerate(filename, 1):
+            thumbnail = thumb
+            if thumb in ["/d", "no"] or not os.path.exists(thumb):
+                temp_thumb = f"downloads/thumb_{part}.jpg"
+                subprocess.run(f'ffmpeg -i "{part}" -ss 00:00:10 -vframes 1 -q:v 2 -y "{temp_thumb}"', shell=True)
+                if os.path.exists(temp_thumb):
+                    spaced_text = ' '.join(watermark)
+                    text_cmd = f'ffmpeg -i "{temp_thumb}" -vf "drawbox=x=0:y=(h-text_h)/2-50:color=black@0.5:width=iw:height=text_h+100:t=fill,drawtext=fontfile=font.otf:text=\'{spaced_text}\':fontcolor=white:fontsize=ih/10:x=(w-text_w)/2:y=(h-text_h)/2:borderw=2:bordercolor=black" -c:v mjpeg -q:v 2 -y "{temp_thumb}"'
+                    subprocess.run(text_cmd, shell=True)
+                thumbnail = temp_thumb if os.path.exists(temp_thumb) else None
+
+            reply = await m.reply_text(f"**Uploading Part {i}/{len(filename)}**")
+            dur = int(duration(part))
+            start_time = time.time()
+
+            try:
+                sent_video = await bot.send_video(
+                    channel_id,
+                    part,
+                    caption=f"{cc}\n\nPart {i}/{len(filename)}",
+                    supports_streaming=True,
+                    height=720,
+                    width=1280,
+                    thumb=thumbnail,
+                    duration=dur,
+                    progress=progress_bar,
+                    progress_args=(reply, start_time)
+                )
+                if log_channel:
+                    try:
+                        await bot.send_video(
+                            log_channel,
+                            sent_video.video.file_id,
+                            caption=f"**User**: {m.from_user.mention}\n{cc}",
+                            supports_streaming=True
+                        )
+                    except:
+                        pass
+            except Exception as e:
+                print(f"Error sending video: {str(e)}")
+                try:
+                    sent_doc = await bot.send_document(
+                        channel_id,
+                        part,
+                        caption=f"{cc}\n\nPart {i}/{len(filename)}",
+                        progress=progress_bar,
+                        progress_args=(reply, start_time)
+                    )
+                    if log_channel:
+                        try:
+                            await bot.send_document(
+                                log_channel,
+                                sent_doc.document.file_id,
+                                caption=f"**User**: {m.from_user.mention}\n{cc}",
+                            )
+                        except:
+                            pass
+                except Exception as e:
+                    print(f"Error sending document: {str(e)}")
+
             os.remove(part)
             await reply.delete(True)
-            
+
             if thumb in ["/d", "no"] and os.path.exists(temp_thumb):
                 os.remove(temp_thumb)
-            
+
             await asyncio.sleep(1)
-        
+
         await m.reply_text("✅ Upload complete!", quote=True)
         await asyncio.sleep(2)
 
     else:
-        # Handle single file
         if isinstance(filename, list):
             filename = filename[0]
-            
-        # Generate thumbnail only if not provided or default
+
         thumbnail = thumb
         if thumb in ["/d", "no"] or not os.path.exists(thumb):
             temp_thumb = f"downloads/thumb_{os.path.basename(filename)}.jpg"
             subprocess.run(f'ffmpeg -i "{filename}" -ss 00:00:10 -vframes 1 -q:v 2 -y "{temp_thumb}"', shell=True)
             if os.path.exists(temp_thumb):
                 spaced_text = ' '.join(watermark)
-                text_cmd = f'''ffmpeg -i "{temp_thumb}" -vf "drawbox=x=(w-text_w)/2-20:y=(h-text_h)/2-20:w=text_w+40:h=text_h+40:color=black@0.6:t=fill,drawtext=fontfile=font.otf:text='{spaced_text}':fontcolor=white:fontsize=ih/10:x=(w-text_w)/2:y=(h-text_h)/2:borderw=1:bordercolor=white" -c:v mjpeg -q:v 2 -y "{temp_thumb}"'''
+                text_cmd = f'ffmpeg -i "{temp_thumb}" -vf "drawbox=x=0:y=(h-text_h)/2-50:color=black@0.5:width=iw:height=text_h+100:t=fill,drawtext=fontfile=font.otf:text=\'{spaced_text}\':fontcolor=white:fontsize=ih/10:x=(w-text_w)/2:y=(h-text_h)/2:borderw=2:bordercolor=black" -c:v mjpeg -q:v 2 -y "{temp_thumb}"'
                 subprocess.run(text_cmd, shell=True)
             thumbnail = temp_thumb if os.path.exists(temp_thumb) else None
-            
+
         await prog.delete(True)
         reply = await m.reply_text("**Uploading...**")
-          
+
         dur = int(duration(filename))
         start_time = time.time()
 
         try:
-            # First send video to user
             sent_video = await bot.send_video(
                 channel_id,
                 filename,
@@ -619,12 +683,8 @@ async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog, cha
                 progress=progress_bar,
                 progress_args=(reply, start_time)
             )
-            
-           
-                    
         except Exception as e:
             print(f"Error sending video: {str(e)}")
-            # Try sending as document if video fails
             try:
                 sent_doc = await bot.send_document(
                     channel_id,
@@ -633,13 +693,11 @@ async def send_vid(bot: Client, m: Message, cc, filename, thumb, name, prog, cha
                     progress=progress_bar,
                     progress_args=(reply, start_time)
                 )
-                
-             
             except Exception as e:
                 print(f"Error sending document: {str(e)}")
-                    
+
         os.remove(filename)
         await reply.delete(True)
-        
+
         if thumb in ["/d", "no"] and os.path.exists(temp_thumb):
             os.remove(temp_thumb)
