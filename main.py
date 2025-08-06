@@ -852,13 +852,12 @@ async def txt_handler(bot: Client, m: Message):
 
             try:
                 cc = (
-    f"——— ✦ {str(count).zfill(2)} ✦ ———\n\n"
+    f"<b>──────  <i>VID ID </i>: {str(count).zfill(3)}  ──────</b>\n\n"
     f"<b>🎥 ᴛɪᴛʟᴇ</b> : {name1}\n\n"
-    f"├── <b>Resolution:</b> {resolution}\n\n"
+    f"<blockquote>"
     f"<b>💠 ʙᴀᴛᴄʜ :</b> {b_name}\n"
     f"</blockquote>\n"
-    f"<b> 📥 ᴇxᴛʀᴀᴄᴛᴇᴅ ʙʏ :</b> {CR}"
-    f"━━━━━━━━━━━━━━━━━━━\n"             
+    f"<b> 📥 ᴇxᴛʀᴀᴄᴛᴇᴅ ʙʏ :</b> {CR}"          
 )
                 cc1 = (
     f"<b>──────  <i>PDF ID </i>: {str(count).zfill(3)}  ──────</b>\n\n"
